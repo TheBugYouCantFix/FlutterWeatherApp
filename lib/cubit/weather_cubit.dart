@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_weather_app/models/weather.dart';
+import 'package:flutter_weather_app/models/weather.dart'; 
 
 import 'package:flutter_weather_app/repositories/weather_repository.dart';
 
@@ -16,7 +16,7 @@ class WeatherCubit extends Cubit<WeatherState> {
     final eitherWeather = await _weatherRepository.getWeatherToday(city);
     eitherWeather.fold(
       (error) => emit(state.copyWith(status: WeatherStatus.todaysWeatherError, errorMessage: error)),
-      (weather) => emit(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, weather: weather)),
+      (weather) => emit(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, city: city, weather: weather)),
     );
   }
 
@@ -25,7 +25,7 @@ class WeatherCubit extends Cubit<WeatherState> {
     final eitherWeather = await _weatherRepository.getWeatherNdaysAhead(nDays, city);
     eitherWeather.fold(
       (error) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherError, errorMessage: error)),
-      (weather) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, nDaysAheadWeather: weather)),
+      (weather) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
     );
   }
 }
