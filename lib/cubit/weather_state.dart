@@ -7,6 +7,7 @@ enum WeatherStatus {
   todaysWeatherError,
   nDaysAheadWeatherLoading,
   nDaysAheadWeatherLoaded,
+  nDaysAheadWeatherError
 }
 
 final class WeatherState extends Equatable {
