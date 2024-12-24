@@ -1,5 +1,5 @@
 class Coordinates {
-  double latitude;
-  double longitude;
+  String latitude;
+  String longitude;
   Coordinates({required this.latitude, required this.longitude});
 }

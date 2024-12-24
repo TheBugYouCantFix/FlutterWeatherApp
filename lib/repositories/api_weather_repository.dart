@@ -23,11 +23,9 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
 
     if (response.statusCode == 200) {
       final jsonData = response.body;
-      List<Map<String, dynamic>> data = jsonDecode(jsonData);
-      double latitude = double.parse(data[0]['lat']);
-      double longitude = double.parse(data[0]['lon']);
+      Map<String, dynamic> data = jsonDecode(jsonData)[0];
 
-      return right(Coordinates(latitude: latitude, longitude: longitude));
+      return right(Coordinates(latitude: data['lat'], longitude: data['lon']));
     } 
 
     return left('Failed to get coordinates');
