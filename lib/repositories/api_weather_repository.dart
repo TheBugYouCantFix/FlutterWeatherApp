@@ -9,7 +9,7 @@ import 'package:flutter_weather_app/models/coordinates.dart';
 import 'package:flutter_weather_app/repositories/weather_repository.dart';
 
 final class OpenWeatherApiWeatherRepository extends WeatherRepository {
-  static const String baseUrl = 'http://api.openweathermap.org';
+  static const String baseUrl = 'https://api.openweathermap.org';
   static final apiKey = dotenv.env['API_KEY'];
   
   const OpenWeatherApiWeatherRepository._internal();
@@ -51,7 +51,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
   }
 
   Future<Either<String, Weather>> getWeatherTodayFromCoordinates(Coordinates coordinates) async {
-    final url = '$baseUrl/data/3.0/onecall?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=$apiKey&units=metric';
+    final url = '$baseUrl/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=$apiKey&units=metric';
     final response = await http.get(Uri.parse(url));
     return getWeatherByResponse(response);
   }
