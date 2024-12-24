@@ -28,7 +28,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
       return right(Coordinates(latitude: data['lat'], longitude: data['lon']));
     } 
 
-    return left('Failed to get coordinates');
+    return left('Не удалось получить координаты');
   }
 
   @override
@@ -47,7 +47,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
       return right(weather);
     }
 
-    return left('Failed to get weather');
+    return left('Не удалось получить данные о погоде');
   }
 
   Future<Either<String, Weather>> getWeatherTodayFromCoordinates(Coordinates coordinates) async {
