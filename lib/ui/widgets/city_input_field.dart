@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_weather_app/cubit/weather_cubit.dart';
+import 'package:flutter_weather_app/provider/city_provider.dart';
 
 class CityInputField extends StatelessWidget {
   const CityInputField({super.key});
@@ -11,7 +12,10 @@ class CityInputField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 50),
       child: TextField(
-        onSubmitted: (value) => context.read<WeatherCubit>().getWeatherToday(value),
+        onSubmitted: (value) {
+          context.read<WeatherCubit>().getWeatherToday(value);
+          context.read<CityProvider>().setCityName(value);
+        },
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: "Название города",
