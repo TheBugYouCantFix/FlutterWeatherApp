@@ -10,33 +10,30 @@ class WeatherCubit extends Cubit<WeatherState> {
   WeatherCubit(this._weatherRepository) : super(const WeatherState());
 
   final WeatherRepository _weatherRepository;
-  WeatherState prevState = const WeatherState();
-
-  void emitState(WeatherState newState) {
-    if (prevState.status != WeatherStatus.initial && prevState.status != state.status) {
-      prevState = state;
-    }
-
-    emit(newState);
-  }
-
   Future<void> getWeatherToday(String city) async {
-    emitState(state.copyWith(status: WeatherStatus.todaysWeatherLoading));
+    emit(state.copyWith(status: WeatherStatus.todaysWeatherLoading));
     final eitherWeather = await _weatherRepository.getWeatherToday(city);
     eitherWeather.fold(
-      (error) => emitState(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
-      (weather) => emitState(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, city: city, weather: weather)),
+      (error) => emit(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
+      (weather) => emit(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, city: city, weather: weather)),
     );
   }
 
   Future<void> getWeatherNdaysAhead(int nDays, String city) async {
-    emitState(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoading));
+    emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoading));
     final eitherWeather = await _weatherRepository.getWeatherNdaysAhead(nDays, city);
     eitherWeather.fold(
-      (error) => emitState(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
-      (weather) => emitState(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
+      (error) => emit(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
+      (weather) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
     );
   }
 
-  void reset() => emitState(state.copyWith(status: WeatherStatus.initial));
+  void reset() => emit(state.copyWith(status: WeatherStatus.initial));
+  void goBack() {
+    if (state.status == WeatherStatus.nDaysAheadWeatherLoaded || state.status == WeatherStatus.nDaysAheadWeatherLoading) {
+      emit(state.copyWith(status: WeatherStatus.todaysWeatherLoaded));
+    } else if (state.status == WeatherStatus.todaysWeatherLoaded || state.status == WeatherStatus.todaysWeatherLoading) {
+      emit(state.copyWith(status: WeatherStatus.initial));
+    }
+  }
 }
