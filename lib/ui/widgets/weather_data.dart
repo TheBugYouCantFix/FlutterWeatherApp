@@ -28,13 +28,13 @@ class WeatherDataWidget extends StatelessWidget {
         children: [
           Text(
             "Погода в городе $city ${getTimeDescription()}",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)
           ),
           const SizedBox(height: 8),
           Text(
             "Температура: ${weather.temperature}°C\n Ощущается как: ${weather.feelsLike}°C \n Скорость ветра: ${weather.windSpeed} м/с \n Влажность: ${weather.humidity}% \n Давление: ${weather.pressure} мм рт. ст.",
-            style: const TextStyle(fontSize: 14),
-          )
+            style: const TextStyle(fontSize: 12),
+          ),
         ]
       )
     );
@@ -46,6 +46,8 @@ class WeatherDataWidget extends StatelessWidget {
         return "сегодня";
       case 1:
         return "завтра";
+      case 2:
+        return "послезавтра";
       default:
         return "через $nDays дней";
     }
