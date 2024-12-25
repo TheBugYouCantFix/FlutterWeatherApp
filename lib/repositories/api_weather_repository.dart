@@ -64,17 +64,21 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
 
   @override
   Future<Either<String, List<Weather>>> getWeatherNdaysAhead(int nDays, String city) async {
-    final eitherCoordinates = await getCoordinatesFromCityName(city);
+    final Either<String, Coordinates> eitherCoordinates = await getCoordinatesFromCityName(city);
     List<Weather> nDaysAheadWeather = [];
-    
+
+    if (eitherCoordinates.isLeft()) {
+      return left('Не удалось получить координаты');
+    }
+
     for (int i = 1; i <= nDays; i++) {
-      eitherCoordinates.fold(
-        (error) => left(error), 
-        (coordinates) async => (await getWeatherForecastFromCoordinates(coordinates, i * 24 * 60 * 60)).fold(
-            (error) => left(error), 
-            (weather) => nDaysAheadWeather.add(weather)
-          )
-      );
+      final weather = await getWeatherForecastFromCoordinates(eitherCoordinates.getOrElse(() => Coordinates(latitude: 0, longitude: 0)), i);
+      
+      if (weather.isLeft()) {
+        return left('Не удалось получить данные о погоде');
+      }
+
+      nDaysAheadWeather.add(weather.getOrElse(() => Weather.defaultWeather()));
     }
 
     return right(nDaysAheadWeather);
