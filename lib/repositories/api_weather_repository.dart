@@ -40,14 +40,20 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
     );
   }
 
-  Either<String, Weather> getWeatherByResponse(http.Response response) {
-    if (response.statusCode == 200) {
-      final jsonData = response.body;
-      Weather weather = Weather.fromOpenWeatherApiJson(jsonData);
-      return right(weather);
+  Either<String, Weather> getWeatherByResponse(http.Response response, [int? nDays]) {
+    if (response.statusCode != 200) {
+      return left('Не удалось получить данные о погоде');
     }
 
-    return left('Не удалось получить данные о погоде');
+    final jsonData = response.body;
+    Weather weather;
+    if (nDays != null) {
+      weather = Weather.fromOpenWeatherApiJson(jsonData, nDays);
+    } else {
+      weather = Weather.fromOpenWeatherApiJson(jsonData);
+    }
+    
+    return right(weather);    
   }
 
   Future<Either<String, Weather>> getWeatherTodayFromCoordinates(Coordinates coordinates) async {
@@ -74,11 +80,10 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
     return right(nDaysAheadWeather);
   } 
 
-  Future<Either<String, Weather>> getWeatherForecastFromCoordinates(Coordinates coordinates, int unixTimeDelta) async {
-    final int unixTime = (DateTime.now().millisecondsSinceEpoch / 1000).round() + unixTimeDelta;
-    final url = '$baseUrl/data/3.0/onecall/timemachine?lat=${coordinates.latitude}&lon=${coordinates.longitude}&dt=$unixTime&appid=$apiKey&units=metric';
+  Future<Either<String, Weather>> getWeatherForecastFromCoordinates(Coordinates coordinates, int nDays) async {
+    final url = '$baseUrl/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&exclude=minutely,hourly,alerts&appid=$apiKey&units=metric';
     final response = await http.get(Uri.parse(url));
 
-    return getWeatherByResponse(response);
+    return getWeatherByResponse(response, nDays);
   }
 } 

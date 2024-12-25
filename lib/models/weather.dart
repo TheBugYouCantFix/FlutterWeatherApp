@@ -9,8 +9,15 @@ final class Weather {
   final String weatherDescription;
 
   const Weather({required this.temperature, required this.feelsLike, required this.windSpeed, required this.humidity, required this.pressure, required this.weatherDescription});
-  factory Weather.fromOpenWeatherApiJson(String jsonData) {
-    Map<String, dynamic> data = jsonDecode(jsonData);
+  factory Weather.fromOpenWeatherApiJson(String jsonData, [int? nDays]) {
+    Map<String, dynamic> data;
+
+    if (nDays != null) {
+      data = jsonDecode(jsonData)['list'][nDays]; 
+    } else {
+      data = jsonDecode(jsonData);
+    }
+
     return Weather(
       temperature: data['main']['temp'],
       feelsLike: data['main']['feels_like'],
@@ -20,4 +27,5 @@ final class Weather {
       weatherDescription: data['weather'][0]['description'],
     );
   }
+  factory Weather.defaultWeather() => const Weather(temperature: 0, feelsLike: 0, windSpeed: 0, humidity: 0, pressure: 0, weatherDescription: '');
 }
