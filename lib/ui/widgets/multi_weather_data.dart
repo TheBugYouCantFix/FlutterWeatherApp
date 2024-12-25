@@ -13,7 +13,12 @@ class MultiWeatherData extends StatelessWidget {
     return Column(
       children: [
         for (int i = 0; i < weatherList.length; i++) 
-          WeatherDataWidget(weather: weatherList[i], nDays: i + 1, city: city)
+          Column(
+            children: [
+              WeatherDataWidget(weather: weatherList[i], city: city, nDays: i + 1),
+              const SizedBox(height: 16),
+            ],
+          )
       ],
     );
   }
