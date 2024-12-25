@@ -11,6 +11,9 @@ import 'package:flutter_weather_app/repositories/weather_repository.dart';
 final class OpenWeatherApiWeatherRepository extends WeatherRepository {
   static const String baseUrl = 'https://api.openweathermap.org';
   static final apiKey = dotenv.env['API_KEY'];
+  static const String units = 'metric';
+  static const String coordinatesRequestFailed = 'Не удалось получить координаты';
+  static const String weatherRequestFailed = 'Не удалось получить данные о погоде';
   
   const OpenWeatherApiWeatherRepository._internal();
   static const OpenWeatherApiWeatherRepository _instance = OpenWeatherApiWeatherRepository._internal();
@@ -28,7 +31,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
       return right(Coordinates(latitude: data['lat'], longitude: data['lon']));
     } 
 
-    return left('Не удалось получить координаты');
+    return left(coordinatesRequestFailed);
   }
 
   @override
@@ -42,7 +45,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
 
   Either<String, Weather> getWeatherByResponse(http.Response response, [int? nDays]) {
     if (response.statusCode != 200) {
-      return left('Не удалось получить данные о погоде');
+      return left(weatherRequestFailed);
     }
 
     final jsonData = response.body;
@@ -57,7 +60,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
   }
 
   Future<Either<String, Weather>> getWeatherTodayFromCoordinates(Coordinates coordinates) async {
-    final url = '$baseUrl/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=$apiKey&units=metric';
+    final url = '$baseUrl/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=$apiKey&units=$units';
     final response = await http.get(Uri.parse(url));
     return getWeatherByResponse(response);
   }
@@ -68,14 +71,14 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
     List<Weather> nDaysAheadWeather = [];
 
     if (eitherCoordinates.isLeft()) {
-      return left('Не удалось получить координаты');
+      return left(coordinatesRequestFailed);
     }
 
     for (int i = 1; i <= nDays; i++) {
       final weather = await getWeatherForecastFromCoordinates(eitherCoordinates.getOrElse(() => Coordinates(latitude: 0, longitude: 0)), i);
       
       if (weather.isLeft()) {
-        return left('Не удалось получить данные о погоде');
+        return left(weatherRequestFailed);
       }
 
       nDaysAheadWeather.add(weather.getOrElse(() => Weather.defaultWeather()));
@@ -85,7 +88,7 @@ final class OpenWeatherApiWeatherRepository extends WeatherRepository {
   } 
 
   Future<Either<String, Weather>> getWeatherForecastFromCoordinates(Coordinates coordinates, int nDays) async {
-    final url = '$baseUrl/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&exclude=minutely,hourly,alerts&appid=$apiKey&units=metric';
+    final url = '$baseUrl/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&exclude=minutely,hourly,alerts&appid=$apiKey&units=$units';
     final response = await http.get(Uri.parse(url));
 
     return getWeatherByResponse(response, nDays);
