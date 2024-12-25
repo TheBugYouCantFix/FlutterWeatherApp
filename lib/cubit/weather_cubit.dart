@@ -28,4 +28,6 @@ class WeatherCubit extends Cubit<WeatherState> {
       (weather) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
     );
   }
+
+  void reset() => emit(state.copyWith(status: WeatherStatus.initial));
 }

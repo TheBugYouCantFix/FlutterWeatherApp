@@ -13,8 +13,10 @@ class WeatherSearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: () => context.read<WeatherCubit>().reset(), icon: const Icon(Icons.home)),
         title: const Text("Поиск погоды"),
       ),
+
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         alignment: Alignment.center,
