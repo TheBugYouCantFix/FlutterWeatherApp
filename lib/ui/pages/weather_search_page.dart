@@ -22,7 +22,7 @@ class WeatherSearchPage extends StatelessWidget {
         alignment: Alignment.center,
         child: BlocConsumer<WeatherCubit, WeatherState>(
           listener: (context, state) {
-            if (state.status == WeatherStatus.todaysWeatherError || state.status == WeatherStatus.nDaysAheadWeatherError) {
+            if (state.status == WeatherStatus.weatherError) {
               showErrorSnackBar(context, state.errorMessage!);
             }
           },

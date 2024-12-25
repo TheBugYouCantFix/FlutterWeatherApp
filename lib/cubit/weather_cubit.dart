@@ -10,24 +10,33 @@ class WeatherCubit extends Cubit<WeatherState> {
   WeatherCubit(this._weatherRepository) : super(const WeatherState());
 
   final WeatherRepository _weatherRepository;
+  WeatherState prevState = const WeatherState();
+
+  void emitState(WeatherState newState) {
+    if (prevState.status != WeatherStatus.initial && prevState.status != state.status) {
+      prevState = state;
+    }
+
+    emit(newState);
+  }
 
   Future<void> getWeatherToday(String city) async {
-    emit(state.copyWith(status: WeatherStatus.todaysWeatherLoading));
+    emitState(state.copyWith(status: WeatherStatus.todaysWeatherLoading));
     final eitherWeather = await _weatherRepository.getWeatherToday(city);
     eitherWeather.fold(
-      (error) => emit(state.copyWith(status: WeatherStatus.todaysWeatherError, errorMessage: error)),
-      (weather) => emit(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, city: city, weather: weather)),
+      (error) => emitState(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
+      (weather) => emitState(state.copyWith(status: WeatherStatus.todaysWeatherLoaded, city: city, weather: weather)),
     );
   }
 
   Future<void> getWeatherNdaysAhead(int nDays, String city) async {
-    emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoading));
+    emitState(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoading));
     final eitherWeather = await _weatherRepository.getWeatherNdaysAhead(nDays, city);
     eitherWeather.fold(
-      (error) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherError, errorMessage: error)),
-      (weather) => emit(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
+      (error) => emitState(state.copyWith(status: WeatherStatus.weatherError, errorMessage: error)),
+      (weather) => emitState(state.copyWith(status: WeatherStatus.nDaysAheadWeatherLoaded, city: city, nDaysAheadWeather: weather)),
     );
   }
 
-  void reset() => emit(state.copyWith(status: WeatherStatus.initial));
+  void reset() => emitState(state.copyWith(status: WeatherStatus.initial));
 }
