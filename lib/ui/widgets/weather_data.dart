@@ -27,7 +27,7 @@ class WeatherDataWidget extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Погода в городе $city ${getTimeDescription()}",
+            "Погода в городе ${(city[0].toUpperCase() + city.substring(1)).replaceAll(' ', '')} ${getTimeDescription()}",
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)
           ),
           const SizedBox(height: 8),
